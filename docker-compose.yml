@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  postgres:
+      image: postgres:latest
+      environment:
+        POSTGRES_DB: cart
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: password
+      ports:
+        - "5432:5432"
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: max@max.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+
+  cart:
+    build:
+      context: cart
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - postgres
+
+  item:
+    build:
+      context: item
+      dockerfile: Dockerfile
+    ports:
+      - "81:81"
+    depends_on:
+      - cart
+  
+volumes:
+  postgres_data:
