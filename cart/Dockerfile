@@ -19,4 +19,4 @@ COPY ./alembic.ini /cart/alembic.ini
 EXPOSE 80
 
 CMD ["/bin/sh", "-c", \
-    "uvicorn app.main:app --host 0.0.0.0 --port 80"]
+    "uvicorn app.main:app --host 0.0.0.0 --port ${PORT}"]
