@@ -37,9 +37,8 @@ def get_metrics():
         content=prometheus_client.generate_latest()
     )
 
-@cart_router.get('/')
+@cart_router.get('/test')
 def get_carts_test(cart_service: CartService = Depends(CartService)) -> list[Cart]:
-    get_cart_count.inc(1)
     return cart_service.get_carts()
 
 @cart_router.get('/')
