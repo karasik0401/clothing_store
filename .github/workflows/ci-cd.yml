@@ -37,7 +37,7 @@ jobs:
         run: |
           sudo docker exec -i postgres-db psql -U postgres -c "\c postgres;" -c "drop table carts, alembic_version;"
           sleep 5
-          cd db_title_app
+          cd cart
           alembic upgrade head
 
       - name: Run integration tests for cart
