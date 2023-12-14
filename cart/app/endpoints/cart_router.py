@@ -14,17 +14,17 @@ cart_router = APIRouter(prefix='/cart', tags=['Cart'])
 metrics_router = APIRouter(tags=['Metrics'])
 
 get_orders_count = prometheus_client.Counter(
-    "get_orders_count",
+    "get_cart_count",
     "Number of get requests"
 )
 
 get_order_by_id_count = prometheus_client.Counter(
-    "get_order_by_id",
+    "get_cart_by_id_count",
     "Number of get requests"
 )
 
 create_order_count = prometheus_client.Counter(
-    "create_order_count",
+    "create_cart_count",
     "Number of get requests"
 )
 
@@ -38,10 +38,15 @@ def get_metrics():
     )
 
 @cart_router.get('/')
+def get_carts_test(cart_service: CartService = Depends(CartService)) -> list[Cart]:
+    get_cart_count.inc(1)
+    return cart_service.get_carts()
+
+@cart_router.get('/')
 def get_carts(cart_service: CartService = Depends(CartService), user_role: str = Depends(get_user_role)) -> list[Cart]:
     if user_role is not None:
         if user_role == "Viewer" or user_role == "Customer":
-            get_orders_count.inc(1)
+            get_cart_count.inc(1)
             return cart_service.get_carts()
         raise HTTPException(status_code=403, detail=f"{user_role}")
     else:
@@ -52,7 +57,7 @@ def get_cart_by_id(id: UUID, cart_service: CartService = Depends(CartService), u
     try:
         if user_role is not None:
             if user_role == "Viewer" or user_role == "Customer":
-                get_order_by_id_count.inc(1)
+                get_cart_by_id_count.inc(1)
                 return cart_service.get_cart_by_id(id)
         else:
             return RedirectResponse(url=f"http://{host_ip}:80/auth/login")
@@ -65,7 +70,7 @@ def create_or_update_cart(item: Item, cart_service: CartService = Depends(CartSe
         if user_role is not None:
             if user_role == "Viewer" or user_role == "Customer":
                 if id and cart_service.get_cart_by_id(id):
-                    create_order_count.inc(1)
+                    create_cart_count.inc(1)
                     order = cart_service.update_cart(id, item)
                     return order.__dict__
                 order = cart_service.create_cart(item)
