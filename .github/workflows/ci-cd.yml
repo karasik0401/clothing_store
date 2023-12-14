@@ -35,7 +35,7 @@ jobs:
 
       - name: Prepare integration tests for cart
         run: |
-          sudo docker exec -i postgres-db psql -U postgres -c "\c postgres;" -c "drop table cart, alembic_version;" -c "drop type titlecategories;"
+          sudo docker exec -i postgres-db psql -U postgres -c "\c postgres;" -c "drop table carts, alembic_version;"
           sleep 5
           cd db_title_app
           alembic upgrade head
