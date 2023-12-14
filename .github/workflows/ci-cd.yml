@@ -4,6 +4,58 @@ on:
   push:
     branches: ["main"]
 jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Prepare tests
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r ./cart/requirements.txt
+          
+          sudo docker run -d -P -e POSTGRES_PASSWORD=password -p 5432:5432 --name postgres-db postgres:14
+          echo "POSTGRES_URL=$POSTGRES_URL" > .env
+          sleep 5
+        env:
+          POSTGRES_URL: postgresql://postgres:password@localhost:5432/postgres
+      
+      - name: Prepare unit tests for cart
+        run: |
+          sleep 5
+          cd cart
+          alembic upgrade head
+
+      - name: Run unit tests for cart
+        run: |
+          cd cart
+          python -m pytest ./tests/unit
+
+      - name: Prepare integration tests for cart
+        run: |
+          sudo docker exec -i postgres-db psql -U postgres -c "\c postgres;" -c "drop table cart, alembic_version;" -c "drop type titlecategories;"
+          sleep 5
+          cd db_title_app
+          alembic upgrade head
+
+      - name: Run integration tests for cart
+        run: |
+          cd cart
+          python -m pytest ./tests/integration
+
+      - name: Prepare tests for item
+        run: |
+          sudo apt update
+          sudo apt install -y python3-pip
+          pip install -r ./item/requirements.txt
+
+      - name: Run unit tests for api_title_app
+        run: |
+          cd item
+          python -m pytest ./tests/unit 
+  
   build-and-push-to-dh:
       name: Build and push to DockerHub
       runs-on: ubuntu-latest
