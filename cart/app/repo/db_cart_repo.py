@@ -18,12 +18,12 @@ class CartRepo():
     def __init__(self) -> None:
         self.db = next(get_db())
     
-    def _map_to_model(self, order: DBCart) -> Cart:
-        result = Cart.from_orm(order)
+    def _map_to_model(self, cart: DBCart) -> Cart:
+        result = Cart.from_orm(cart)
         return result
 
-    def _map_to_schema(self, order: Cart) -> DBCart:
-        data = dict(order)
+    def _map_to_schema(self, cart: Cart) -> DBCart:
+        data = dict(cart)
         result = DBCart(**data)
         return result
 
