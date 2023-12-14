@@ -14,7 +14,11 @@ items: list[Item] = [
 ]
 
 
-class ItemRepo():    
+class ItemRepo():
+    def __init__(self, clear: bool = False) -> None:
+        if clear:
+            items.clear()
+    
     def get_items(self) -> list[Item]:
         return items
 
