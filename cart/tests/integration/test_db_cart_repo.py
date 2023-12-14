@@ -17,7 +17,7 @@ def sample_item() -> Item:
 
 
 def test_empty_carts(cart_repo: CartRepo) -> None:
-    assert cart_repo.get_carts() != []
+    assert len(cart_repo.get_carts()) == 0
 
 
 def test_create_cart(cart_repo: CartRepo, sample_item: dict) -> None:
